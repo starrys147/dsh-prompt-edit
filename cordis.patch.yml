@@ -1,0 +1,8 @@
+# dsh-prompt-stash bundle patch
+#
+# One Host row carries both halves: the Host half owns the file-backed stash and
+# its JSON route, the Client half (`dsh.client`) registers the right-sidebar tab,
+# the left-sidebar entry and the `/prompt` command.
+- insert:
+    - id: prompt-stash
+      name: 'dsh-prompt-stash'

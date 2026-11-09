@@ -52,12 +52,23 @@
 
 现版本注入是**替换输入框**（`inputActions.setDraft`），这是需求里的默认语义。DSH 确实支持附件（`inputActions.addAttachments(ids)` + 宿主 `fileUploads.upload` → `attachments`），但从浏览器端把一段字符串变成附件需要一次「上传 → 得到 attachmentId → 挂载」的会话往返，草稿语义变成附件后模型读到的也是文件而非提示词正文。所以这里没有做默认切换；如果以后要，正确做法是加一个「注入方式」设置项，而不是替换现有行为。
 
+## 安装
+
+这是一个本地插件包：`package.json` 同时声明了 `dsh.bundle.patch` 与 `dsh.client`，所以装进某个 profile 就会带上 Host 行、客户端模块与 patch。
+
+- 已验证的方式：让 agent 调 `plugin_manager` 的 `install_bundle`，`target` 填本目录的绝对路径（会以 `link:` 依赖装进 profile）；
+- CLI 侧对应 `dsh plugin --profile <profile> add <本目录>`，本会话没有用它验证过。
+
+装完 `application` 为 `applied`，刷新一次页面即可；`/prompt` 和左栏「稿箱」随后可用。改动 `src/client/*.js` 后要 `node build.mjs` 并重挂一次 bundle（本包会提交构建产物 `client.js`，安装时不需要构建）。
+
 ## 开发
 
 ```sh
 node build.mjs     # src/client/*.js -> client.js（三个 IIFE 顺序拼接，无打包器）
-node --test tests/ # 65 个用例：归档整形 + Host 存储/路由 + 服务端渲染 + jsdom 交互 + 入口接线
+node --test tests/ # 66 个用例：归档整形 + Host 存储/路由 + 服务端渲染 + jsdom 交互 + 入口接线
 ```
+
+测试用到的 React/ReactDOM 来自**已安装的 DSH profile**，不在本包依赖里；解析顺序见 `tests/env.mjs`（`DSH_PROFILE_DIR` → `DSH_HOME` + `DSH_PROFILE` → `~/.dsh/profiles/desktop`，也可用 `DSH_PROMPT_STASH_PROFILE_MODULES` 直接指定）。DOM 那组需要 jsdom：`npm install` 后会自动找到本目录的 `node_modules`，或用 `DSH_PROMPT_STASH_JSDOM` 指一个装好 jsdom 的 `node_modules`。缺依赖时那组测试会**显式跳过并说明原因**，不会假装通过。
 
 源码组织：`index.js`（Host：存储规则 + 一条 JSON 路由 + 开文件夹）、`src/client/model.js`（i18n、调色板、分组/排序/筛选、store、HTTP）、`src/client/ui.js`（编辑器、存档页、Markdown 渲染、样式）、`src/client/entry.js`（四个注册：标签页类型 / 斜杠命令 / 左栏入口 / 主面板页）。
 
@@ -66,4 +77,3 @@ node --test tests/ # 65 个用例：归档整形 + Host 存储/路由 + 服务�
 - 只在**桌面端（`dsh-app://app/`）**实测过：注入、发送依赖右侧栏标签页拿到的 `inputActions`，而右侧栏只在有会话时挂载。没有挂载时会先展开右边栏并重试一次，仍失败则提示「先在任意会话里按 `/prompt`」。
 - 右边栏宽度很窄（约 300–460px），编辑器按单列排布，不提供双栏预览。
 - 颜色是「预设 + 任意 hex」，不是颜色管理；同一个 hex 的不同写法会归到同一组。
-# dsh-prompt-edit

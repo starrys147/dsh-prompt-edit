@@ -1,0 +1,8 @@
+# Build output is committed (client.js is what the Host serves), so nothing here
+# is generated. Keep local tooling and noise out.
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Prompt Stash">
+  <rect x="10" y="7" width="44" height="50" rx="9" fill="#4d6bfe"/>
+  <path d="M18 18h20M18 27h28M18 36h22M18 45h14" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" opacity="0.95"/>
+  <path d="M36 7h9a9 9 0 0 1 9 9v10l-9-5.6L36 26V7z" fill="#c2653f"/>
+</svg>
